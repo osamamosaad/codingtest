@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Machine;
+namespace App\Machine\Contracts;
 
 /**
  * Interface PurchasedItemInterface
@@ -17,6 +17,11 @@ interface PurchasedItemInterface
      * @return float
      */
     public function getTotalAmount();
+
+    /**
+     * @return float
+     */
+    public function getAmountItem();
 
     /**
      * Returns the change in this format:

@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Machine;
+namespace App\Machine\Contracts;
+
 
 /**
  * Interface CigaretteMachine
@@ -13,5 +14,5 @@ interface MachineInterface
      *
      * @return PurchasedItemInterface
      */
-    public function execute(PurchaseTransactionInterface $purchaseTransaction);
+    public function execute(PurchaseTransactionInterface $purchaseTransaction): PurchasedItemInterface;
 }
