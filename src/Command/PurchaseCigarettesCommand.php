@@ -2,11 +2,14 @@
 
 namespace App\Command;
 
+use App\Machine\ChangeCalculator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use App\Machine\CigaretteMachine;
+use App\Machine\Contracts\PurchasedItemInterface;
 
 /**
  * Class CigaretteMachine
@@ -31,26 +34,28 @@ class PurchaseCigarettesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $itemCount = (int) $input->getArgument('packs');
-        $amount = (float) \str_replace(',', '.', $input->getArgument('amount'));
+        $cigaretteMachine = new CigaretteMachine(new ChangeCalculator());
+        $purchasedItem = $cigaretteMachine->execute(new PurchaseTransaction($input));
 
+        $this->render($output, $purchasedItem);
+    }
 
-        // $cigaretteMachine = new CigaretteMachine();
-        // ...
-
-        $output->writeln('You bought <info>...</info> packs of cigarettes for <info>...</info>, each for <info>...</info>. ');
+    protected function render(OutputInterface $output, PurchasedItemInterface $purchasedItem)
+    {
+        $infoFormat = "You bought <info>%d</info> packs of cigarettes for <info>-%.2f</info>, each for <info>-%.2f</info>.";
+        $output->writeln(sprintf(
+            $infoFormat,
+            $purchasedItem->getItemQuantity(),
+            $purchasedItem->getTotalAmount(),
+            $purchasedItem->getAmountItem()
+        ));
         $output->writeln('Your change is:');
+        $changeResult = $purchasedItem->getChange();
 
         $table = new Table($output);
         $table
             ->setHeaders(array('Coins', 'Count'))
-            ->setRows(array(
-                // ...
-                array('0.02', '0'),
-                array('0.01', '0'),
-            ))
-        ;
+            ->setRows($changeResult);
         $table->render();
-
     }
 }
